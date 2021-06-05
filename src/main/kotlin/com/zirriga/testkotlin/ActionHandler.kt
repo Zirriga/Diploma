@@ -59,10 +59,13 @@ class ActionHandler : AnAction() {
         }
         if (DialogWrapperCall.phraseSaved == MicrophoneRecognition.resultVoice) {ActionManager.getInstance().getAction((DialogWrapperCall.actionSaved)).actionPerformed(e);}
     }
-
+/*
     companion object {
+        lateinit var listOfActions: Array<String>
         lateinit var map: Any
     }
+
+ */
 }
 //Messages.showMessageDialog(e.project, "Here you can see instructions", "Options", Messages.getInformationIcon())
 //ActionManager.getInstance().getAction(ACTION_UNDO).actionPerformed(e)

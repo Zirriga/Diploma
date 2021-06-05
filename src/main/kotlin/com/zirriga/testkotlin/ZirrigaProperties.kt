@@ -10,13 +10,12 @@ import org.jdesktop.swingx.graphics.BlendComposite
 class ZirrigaProperties: AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
-        Screen.main(null)
-
-
+        var screen = Screen();
+        screen.screenVisual()
     }
 
     private fun getAction (e: AnActionEvent){
-        val name=
-            Messages.showInputDialog(e.project, "Enter your action", "MyIdeaDemo Data", Messages.getQuestionIcon())
+        //val name=
+          //  Messages.showInputDialog(e.project, "Enter your action", "MyIdeaDemo Data", Messages.getQuestionIcon())
     }
 }

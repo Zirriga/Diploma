@@ -5,6 +5,7 @@ import com.google.api.gax.rpc.ResponseObserver;
 import com.google.api.gax.rpc.StreamController;
 import com.google.cloud.speech.v1.*;
 import com.google.protobuf.ByteString;
+import com.zirriga.ui.Properties;
 
 import javax.sound.sampled.*;
 import java.nio.charset.StandardCharsets;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 public class MicrophoneRecognition {
     public static String resultVoice = "";
     public static String iskPhrase = "";
+    public static String language = Properties.gLanguage;
 
     public static void main(String[] args) throws Exception {
 
@@ -52,7 +54,7 @@ public class MicrophoneRecognition {
             RecognitionConfig recognitionConfig =
                     RecognitionConfig.newBuilder()
                             .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
-                            .setLanguageCode("ru-RU")
+                            .setLanguageCode(language) //CHOOOOOOOOOOOOSING LANGUAGE HERE! ------------------------------------------------------------------------------------------------------------
                             .setSampleRateHertz(16000)
                             .build();
             StreamingRecognitionConfig streamingRecognitionConfig =

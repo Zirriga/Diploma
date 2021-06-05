@@ -14,10 +14,12 @@
      </extensions>
 
      <actions>
+         <!--
          <action id="your.action.id" class="com.zirriga.myideademokotlin.HelloAction"
                  text="Some Label" description="Action description" icon="AllIcons.Actions.Colors">
              <add-to-group group-id="ToolbarRunGroup" anchor="first" />
-         </action>
+
+         </action> -->
 
          <action id="your.action.idb" class="com.zirriga.testkotlin.ActionHandler"
                  text="ZirrigaVoice" description="Action description" icon="AllIcons.Actions.Lightning">
@@ -26,7 +28,8 @@
 
          <group id="Zirriga.Properties" text="ZirrigaProperties" description="Properties">
              <add-to-group group-id="MainMenu" anchor="last" />
-             <action class = "com.zirriga.testkotlin.ZirrigaProperties" id = "Zirriga.Actions.Properties" text = "Properties"/>
+             <action class = "com.zirriga.testkotlin.ZirrigaProperties" id = "Zirriga.Actions.Properties" text = "VoiceCommands"/>
+             <action class = "com.zirriga.testkotlin.ZirrigaVoiceInputProp" id = "Zirriga.Actions.VoiceInputProp" text = "Properties"/>
          </group>
 
      </actions>
