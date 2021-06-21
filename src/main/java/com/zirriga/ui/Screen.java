@@ -1,17 +1,21 @@
 package com.zirriga.ui;
 
+import com.zirriga.myideademokotlin.CommandsFileHandler;
+import com.zirriga.myideademokotlin.IDEActionsParser;
 import com.zirriga.testkotlin.ActionHandler;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.io.*;
+import java.util.*;
 
 public class Screen extends JFrame {
-    final String [] ideActions = {"dsfsdsdasdff", "dsfs111111", "22dsfsdf"};
-    //public static String gAction = "test";
+    private List<String> ideActions = new ArrayList<>();
+    private Map<String, String> actions = new HashMap<>();
     private JPanel TopPanel;
     private JPanel LeftPanel;
     private JPanel RightPanel;
@@ -24,37 +28,103 @@ public class Screen extends JFrame {
     private JTextField textName;
     private JComboBox cbAction;
     private JScrollPane scrollPane;
+    private JButton deleteButton;
     private ArrayList<Commands> commands;
     private DefaultListModel listCommandsModel;
 
-    public Screen() {
+    public File fileUser = new File("C://Users//Polya//IdeaProjects//test_test_gradle//src//main//resources//ActionsFile//UserActions.txt");
+    public boolean changeFlag = false;
+
+
+    public Screen() throws IOException {
         super("ZirrigaVoice");
         this.setContentPane(this.panelMain);
         this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         this.pack();
+
         commands = new ArrayList<>();
         listCommandsModel = new DefaultListModel();
         listCommands.setModel(listCommandsModel);
         changeButton.setEnabled(false);
+        createButton.setEnabled(false);
+        deleteButton.setEnabled(false);
 
+        actions = IDEActionsParser.init();
 
-        for(String i : ideActions){
+        ideActions.addAll(actions.values());
+
+        String[] array = new String[ideActions.size()];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = ideActions.get(i);
+        }
+
+        for (String i : array) {
             cbAction.addItem(i);
         }
 
         AutoCompletion.enable(cbAction);
-/*
-        cbAction.addActionListener(new ActionListener() {
+
+        textName.getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void actionPerformed (ActionEvent e){
-                if (e.getSource() == cbAction) {
-                    gAction = Objects.requireNonNull(cbAction.getSelectedItem()).toString();
-                    System.out.println(gAction);
+            public void insertUpdate(DocumentEvent e) {
+                warn();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                warn();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                warn();
+            }
+
+            public void warn() {
+                if (textName.getText().equals("") || textCommand.getText().equals("")) {
+                    createButton.setEnabled(false);
+                    changeButton.setEnabled(false);
+                    deleteButton.setEnabled(false);
+                } else {
+                    createButton.setEnabled(true);
+                    if (changeFlag) {
+                        changeButton.setEnabled(true);
+                        deleteButton.setEnabled(true);
+                    }
                 }
             }
         });
 
- */
+        textCommand.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                warn();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                warn();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                warn();
+            }
+
+            public void warn() {
+                if (textCommand.getText().equals("") || textName.getText().equals("")) {
+                    createButton.setEnabled(false);
+                    changeButton.setEnabled(false);
+                    deleteButton.setEnabled(false);
+                } else {
+                    createButton.setEnabled(true);
+                    if (changeFlag) {
+                        changeButton.setEnabled(true);
+                        deleteButton.setEnabled(true);
+                    }
+                }
+            }
+        });
 
         createButton.addActionListener(new ActionListener() {
             @Override
@@ -62,11 +132,26 @@ public class Screen extends JFrame {
                 Commands c = new Commands(
                         textName.getText(),
                         cbAction.getSelectedItem().toString(),
-                        textCommand.getText(),
+                        textCommand.getText().toLowerCase(Locale.ROOT),
                         usedCheckBox.isSelected()
                 );
+                changeFlag = false;
                 commands.add(c);
+                CommandsFileHandler.appendCommand2File(c);
                 refreshCommandsList();
+            }
+        });
+
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int i = listCommands.getSelectedIndex();
+                listCommandsModel.remove(i);
+                changeFlag = false;
+                commands.remove(i);
+                CommandsFileHandler.removeCommandFromFile(i);
+                refreshCommandsList();
+                changeFlag = false;
             }
         });
 
@@ -78,9 +163,12 @@ public class Screen extends JFrame {
                     Commands c = commands.get(commandsNumber);
                     c.setName(textName.getText());
                     c.setAction(cbAction.getSelectedItem().toString());
-                    c.setCommand(textCommand.getText());
+                    c.setCommand(textCommand.getText().toLowerCase(Locale.ROOT));
                     c.setUsed(usedCheckBox.isSelected());
+                    CommandsFileHandler.removeCommandFromFile(commandsNumber);
+                    CommandsFileHandler.appendCommand2File(commands.get(commandsNumber));
                     refreshCommandsList();
+                    changeFlag = false;
                 }
             }
         });
@@ -103,16 +191,18 @@ public class Screen extends JFrame {
                     textCommand.setText(c.getCommand());
                     usedCheckBox.setSelected(c.getUsed());
                     changeButton.setEnabled(true);
+                    changeFlag = true;
                 }
             }
         });
+
     }
 
     public void refreshCommandsList() {
         listCommandsModel.removeAllElements();
         System.out.println("all removed");
         for (Commands c : commands) {
-            System.out.println("ADDING COMMAND TO LIST ACTION:" + c.getAction() + " COMMAND:" + c.getCommand());
+           // System.out.println("ADDING COMMAND TO LIST ACTION:" + c.getAction() + " COMMAND:" + c.getCommand());
             listCommandsModel.addElement(c.getName());
         }
     }
@@ -124,20 +214,26 @@ public class Screen extends JFrame {
 
     public void screenVisual() {
         this.setVisible(true);
-
+        this.setSize(710, 500);
 
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.out.println("windowClosing");
-                System.out.println(commands);
+               // System.out.println("windowClosing");
+               // System.out.println(commands);
                 setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
             }
         });
 
-        com.zirriga.ui.Commands test1 = new Commands("Testaction1", "Action1", "test1", true);
-        com.zirriga.ui.Commands test2 = new Commands("Testaction2","Action2", "test2", false);
-        this.addCommand(test1);
-        this.addCommand(test2);
+        for (int i = 0; i < CommandsFileHandler.getAllCommands().size(); i++) {
+            Commands c = new Commands(
+                    CommandsFileHandler.getAllCommands().get(i).getName(),
+                    CommandsFileHandler.getAllCommands().get(i).getAction(),
+                    CommandsFileHandler.getAllCommands().get(i).getCommand(),
+                    CommandsFileHandler.getAllCommands().get(i).getUsed()
+            );
+            commands.add(c);
+            refreshCommandsList();
+        }
     }
 }

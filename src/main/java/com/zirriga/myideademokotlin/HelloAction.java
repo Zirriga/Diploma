@@ -15,7 +15,6 @@ public class HelloAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Messages.showMessageDialog("hello", "Zirriga", Messages.getQuestionIcon());
-        //ActionManager.getInstance().getAction(ACTION_UNDO).actionPerformed(e);
         MicrophoneRecognition mICrEC = new MicrophoneRecognition();
         try {
             mICrEC.main(null);
@@ -25,13 +24,10 @@ public class HelloAction extends AnAction {
 
         if (mICrEC.resultVoice.equals("отмена")) {
             ActionManager.getInstance().getAction(ACTION_UNDO).actionPerformed(e);
-       }
+        }
         if (mICrEC.resultVoice.equals("повтор")) {
             ActionManager.getInstance().getAction(ACTION_REDO).actionPerformed(e);
         }
-
-
-      // System.out.println("привет");
     }
 
     @Override

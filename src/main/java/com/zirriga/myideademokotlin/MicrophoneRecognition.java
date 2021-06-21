@@ -6,17 +6,46 @@ import com.google.api.gax.rpc.StreamController;
 import com.google.cloud.speech.v1.*;
 import com.google.protobuf.ByteString;
 import com.zirriga.ui.Properties;
+import org.json.JSONObject;
 
 import javax.sound.sampled.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class MicrophoneRecognition {
     public static String resultVoice = "";
     public static String iskPhrase = "";
-    public static String language = Properties.gLanguage;
+    public static String LANGUAGE = "ru-RU";
+
+    public static File fileUser = new File("C://Users//Polya//IdeaProjects//test_test_gradle//src//main//resources//ActionsFile//UserProp.json");
+
+    private static String getFileFromResource() {
+        FileInputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(fileUser);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("file not found! ");
+        }
+        // the stream holding the file content
+        return new BufferedReader(
+                new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
+                .collect(Collectors.joining("\n"));
+    }
+
+    public static void init() {
+        String jsonString = getFileFromResource();
+        JSONObject obj = new JSONObject(jsonString);
+        LANGUAGE = obj.getString("LANGUAGE");
+    }
 
     public static void main(String[] args) throws Exception {
+        init();
 
         ResponseObserver<StreamingRecognizeResponse> responseObserver = null;
         try (SpeechClient client = SpeechClient.create()) {
@@ -25,7 +54,8 @@ public class MicrophoneRecognition {
                     new ResponseObserver<StreamingRecognizeResponse>() {
                         ArrayList<StreamingRecognizeResponse> responses = new ArrayList<>();
 
-                        public void onStart(StreamController controller) {}
+                        public void onStart(StreamController controller) {
+                        }
 
                         public void onResponse(StreamingRecognizeResponse response) {
                             responses.add(response);
@@ -38,7 +68,7 @@ public class MicrophoneRecognition {
                                 iskPhrase = alternative.getTranscript();
                                 System.out.printf("Transcript : %s\n", alternative.getTranscript());
 
-                                resultVoice = allOctals(alternative.getTranscript());
+                                resultVoice = alternative.getTranscript().toLowerCase(Locale.ROOT);
                                 System.out.printf("Transcript : %s\n", resultVoice);
                             }
                         }
@@ -54,7 +84,7 @@ public class MicrophoneRecognition {
             RecognitionConfig recognitionConfig =
                     RecognitionConfig.newBuilder()
                             .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
-                            .setLanguageCode(language) //CHOOOOOOOOOOOOSING LANGUAGE HERE! ------------------------------------------------------------------------------------------------------------
+                            .setLanguageCode(LANGUAGE)
                             .setSampleRateHertz(16000)
                             .build();
             StreamingRecognitionConfig streamingRecognitionConfig =
@@ -107,218 +137,4 @@ public class MicrophoneRecognition {
         }
         responseObserver.onComplete();
     }
-
-    public static String allOctals(String str) {
-        String result = "";
-        for (int i = 0; i < str.length(); i = i + 1) {
-            int intValue = (int)(str.charAt(i));
-            switch (intValue) {
-                case (1025):
-                    result += "Ё";
-                    continue;
-                case (1040):
-                    result += "А";
-                    continue;
-                case (1041):
-                    result += "Б";
-                    continue;
-                case (1042):
-                    result += "В";
-                    continue;
-                case (1043):
-                    result += "Г";
-                    continue;
-                case (1044):
-                    result += "Д";
-                    continue;
-                case (1045):
-                    result += "Е";
-                    continue;
-                case (1046):
-                    result += "Ж";
-                    continue;
-                case (1047):
-                    result += "3";
-                    continue;
-                case (1048):
-                    result += "И";
-                    continue;
-                case (1049):
-                    result += "Й";
-                    continue;
-                case (1050):
-                    result += "К";
-                    continue;
-                case (1051):
-                    result += "Л";
-                    continue;
-                case (1052):
-                    result += "М";
-                    continue;
-                case (1053):
-                    result += "Н";
-                    continue;
-                case (1054):
-                    result += "О";
-                    continue;
-                case (1055):
-                    result += "П";
-                    continue;
-                case (1056):
-                    result += "Р";
-                    continue;
-                case (1057):
-                    result += "С";
-                    continue;
-                case (1058):
-                    result += "Т";
-                    continue;
-                case (1059):
-                    result += "У";
-                    continue;
-                case (1060):
-                    result += "Ф";
-                    continue;
-                case (1061):
-                    result += "Х";
-                    continue;
-                case (1062):
-                    result += "Ц";
-                    continue;
-                case (1063):
-                    result += "Ч";
-                    continue;
-                case (1064):
-                    result += "Ш";
-                    continue;
-                case (1065):
-                    result += "Щ";
-                    continue;
-                case (1066):
-                    result += "Ъ";
-                    continue;
-                case (1067):
-                    result += "Ы";
-                    continue;
-                case (1068):
-                    result += "Ь";
-                    continue;
-                case (1069):
-                    result += "Э";
-                    continue;
-                case (1070):
-                    result += "Ю";
-                    continue;
-                case (1071):
-                    result += "Я";
-                    continue;
-
-                case (1072):
-                    result += "а";
-                    continue;
-                case (1073):
-                    result += "б";
-                    continue;
-                case (1074):
-                    result += "в";
-                    continue;
-                case (1075):
-                    result += "г";
-                    continue;
-                case (1076):
-                    result += "д";
-                    continue;
-                case (1077):
-                    result += "е";
-                    continue;
-                case (1078):
-                    result += "ж";
-                    continue;
-                case (1079):
-                    result += "з";
-                    continue;
-                case (1080):
-                    result += "и";
-                    continue;
-                case (1081):
-                    result += "й";
-                    continue;
-                case (1082):
-                    result += "к";
-                    continue;
-                case (1083):
-                    result += "л";
-                    continue;
-                case (1084):
-                    result += "м";
-                    continue;
-                case (1085):
-                    result += "н";
-                    continue;
-                case (1086):
-                    result += "о";
-                    continue;
-                case (1087):
-                    result += "п";
-                    continue;
-                case (1088):
-                    result += "р";
-                    continue;
-                case (1089):
-                    result += "с";
-                    continue;
-                case (1090):
-                    result += "т";
-                    continue;
-                case (1091):
-                    result += "у";
-                    continue;
-                case (1092):
-                    result += "ф";
-                    continue;
-                case (1093):
-                    result += "х";
-                    continue;
-                case (1094):
-                    result += "ц";
-                    continue;
-                case (1095):
-                    result += "ч";
-                    continue;
-                case (1096):
-                    result += "ш";
-                    continue;
-                case (1097):
-                    result += "щ";
-                    continue;
-                case (1098):
-                    result += "ъ";
-                    continue;
-                case (1099):
-                    result += "ы";
-                    continue;
-                case (1100):
-                    result += "ь";
-                    continue;
-                case (1101):
-                    result += "э";
-                    continue;
-                case (1102):
-                    result += "ю";
-                    continue;
-                case (1103):
-                    result += "я";
-                    continue;
-                case (1105):
-                    result += "ё";
-                    continue;
-            }
-
-        }
-        return result;
-    }
-
-
-
-
 }

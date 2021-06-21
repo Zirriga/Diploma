@@ -1,4 +1,5 @@
 package com.zirriga.myideademokotlin;// Imports the Google Cloud client library
+
 import com.google.cloud.speech.v1.RecognitionAudio;
 import com.google.cloud.speech.v1.RecognitionConfig;
 import com.google.cloud.speech.v1.RecognitionConfig.AudioEncoding;
@@ -11,7 +12,9 @@ import java.util.List;
 
 public class QuickstartSample {
 
-    /** Demonstrates using the Speech API to transcribe an audio file. */
+    /**
+     * Demonstrates using the Speech API to transcribe an audio file.
+     */
     public static void main(String... args) throws Exception {
         // Instantiates a client
         try (SpeechClient speechClient = SpeechClient.create()) {
